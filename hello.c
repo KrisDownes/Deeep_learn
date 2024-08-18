@@ -1,6 +1,9 @@
 #include <stdio.h>
 
-int main(void)
+
+int main()
 {
-    printf("hello,world");
+    char *s = "testing";
+    printf("%s", s);
+    return 0;
 }
