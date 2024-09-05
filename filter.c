@@ -197,6 +197,7 @@ int main(int argc, char *argv[]) {
             for (int j =0; j < infoHeader.biWidth; j++){
                 int pixelOffset = i * rowSize + j * bytesPerPixel;
                 applyGrayscaleFilter(&imageData[pixelOffset],bytesPerPixel);
+                printf("Grayscale filter applied\n");
             }
         }
     } else if (strcmp(filterFlag,"-r") == 0){
