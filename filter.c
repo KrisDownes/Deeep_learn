@@ -62,6 +62,34 @@ void applyReflectionFilter(unsigned char *imageData, int width, int height, int 
     free(tempRow);
 }
 
+// Blur Filter
+void applyBlurFilter(unsigned char *imageData, int width, int height, int bytesPerPixel, int padding){
+    int rowSize = width * bytesPerPixel + padding;
+    unsigned char *tempData = malloc(height * rowSize);
+    if (tempData == NULL){
+        printf("Memory allocation for blur failed.\n");
+        return;
+    }
+    memcpy(tempData,imageData,height * rowSize);
+
+    for (int y = 1; y < height - 1; y++){
+        for (int x = 1; x < width - 1;x++){
+            for (int c = 0; c < 3; c++){
+                int sum = 0;
+                for (int dy = -1; dy <= 1; dy++){
+                    for (int dx = -1; dx <= 1; dx++){
+                        int currentPixel = ((y + dy) * rowSize) + ((x + dx) * bytesPerPixel) + c;
+                        sum += tempData[currentPixel];
+                    }
+                }
+                int currentPixel = (y * rowSize) + (x * bytesPerPixel) + c;
+                imageData[currentPixel] = (unsigned char)(sum / 9);
+            }
+        }
+    }
+    free(tempData);
+}
+
 // Function to write BMP file
 int writeBMPFile(const char *filename, BITMAPFILEHEADER *fileHeader, BITMAPINFOHEADER *infoHeader, unsigned char *imageData){
     FILE *file = fopen(filename, "wb");
@@ -200,7 +228,10 @@ int main(int argc, char *argv[]) {
                 printf("Grayscale filter applied\n");
             }
         }
-    } else if (strcmp(filterFlag,"-r") == 0){
+    } else if (strcmp(filterFlag, "-b") == 0){
+        applyBlurFilter(imageData,infoHeader.biWidth,infoHeader.biHeight,bytesPerPixel,padding);
+        printf("Blur filter applied\n");
+    }else if (strcmp(filterFlag,"-r") == 0){
         applyReflectionFilter(imageData,infoHeader.biWidth,infoHeader.biHeight,bytesPerPixel,padding);
         printf("Reflection filter applied.\n");
     } else {
